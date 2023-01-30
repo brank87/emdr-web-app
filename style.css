@@ -1,0 +1,18 @@
+body {
+  background-color: lightgray;
+}
+
+#container {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#ball {
+  height: 50px;
+  width: 50px;
+  background-color: blue;
+  border-radius: 25px;
+}
