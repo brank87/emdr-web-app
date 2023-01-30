@@ -1,31 +1,55 @@
 const dot = document.getElementById("dot");
-const container = document.getElementById("container");
-const speedInput = document.getElementById("speed");
-const leftSound = document.getElementById("left-sound");
-const rightSound = document.getElementById("right-sound");
+const speedSlider = document.getElementById("speed");
+const playPauseButton = document.getElementById("play-pause");
+const leftAudio = new Audio("left.mp3");
+const rightAudio = new Audio("right.mp3");
 
-let speed = 5;
-let direction = 1;
+let animationId;
+let isPlaying = false;
 
-speedInput.addEventListener("input", (event) => {
-  speed = event.target.value;
+playPauseButton.addEventListener("click", function() {
+  if (isPlaying) {
+    pause();
+  } else {
+    play();
+  }
 });
 
-setInterval(() => {
-  const left = parseInt(getComputedStyle(dot).left);
-  const containerWidth = parseInt(getComputedStyle(container).width);
-  const dotWidth = parseInt(getComputedStyle(dot).width);
+speedSlider.addEventListener("input", function() {
+  pause();
+  play();
+});
 
-  if (left + dotWidth >= containerWidth || left <= 0) {
-    direction *= -1;
-    if (direction === 1) {
-      rightSound.currentTime = 0;
-      rightSound.play();
-    } else {
-      leftSound.currentTime = 0;
-      leftSound.play();
-    }
+function play() {
+  isPlaying = true;
+  animationId = requestAnimationFrame(moveDot);
+  playPauseButton.innerHTML = "Pause";
+}
+
+function pause() {
+  isPlaying = false;
+  cancelAnimationFrame(animationId);
+  playPauseButton.innerHTML = "Play";
+}
+
+function moveDot() {
+  const speed = speedSlider.value;
+  const x = dot.offsetLeft + speed;
+  const screenWidth = window.innerWidth;
+
+  if (x + dot.offsetWidth > screenWidth) {
+    dot.style.left = 0;
+    rightAudio.currentTime = 0;
+    rightAudio.play();
+  } else if (x < 0) {
+    dot.style.left = screenWidth - dot.offsetWidth + "px";
+    leftAudio.currentTime = 0;
+    leftAudio.play();
+  } else {
+    dot.style.left = x + "px";
   }
 
-  dot.style.left = `${left + speed * direction}px`;
-}, 50);
+  if (isPlaying) {
+    animationId = requestAnimationFrame(moveDot);
+  }
+}
